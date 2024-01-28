@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (password === generatedPassword || passwordEntered) {
             // Set a flag in session storage indicating that the password has been entered during this session
             sessionStorage.setItem('passwordEntered', 'true');
-
+            startSessionTimeout();
             // setup notes page
             setupPage(true);
         } else {
@@ -41,7 +41,35 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    var sessionTimeout;
 
+    function startSessionTimeout() {
+            // Set the session timeout to 60 seconds (in milliseconds)
+            var timeoutDuration = 60 * 1000;
+        
+            // Clear any existing timeout
+            clearTimeout(sessionTimeout);
+        
+            // Start a new timeout
+            sessionTimeout = setTimeout(function () {
+                // Perform logout or session expiration actions
+                signOut();
+                //alert('Your session has timed out. Please sign in again.');
+        
+                // Redirect to the sign-in page or perform logout
+                // window.location.href = '/sign-in'; // Adjust the URL as needed
+                
+            }, timeoutDuration);
+        }
+        
+        // Call this function whenever there is user activity or a new page is loaded
+        function resetSessionTimeout() {
+            startSessionTimeout();
+        }
+        
+        
+        
+        
 
     function enableNotesListeners()
     {
@@ -153,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function setupNote()
     {
         console.log('setupNote() called');
-
+        resetSessionTimeout();
         procedureInsert = ``;
         indicationsInsert = document.getElementById('restoIndicationsInput').value.trim();
         restoInputValue = document.getElementById('restoSurfacesInput').value.trim();
@@ -420,3 +448,9 @@ signOutButton.addEventListener('click', function() {
     sessionStorage.removeItem('passwordEntered');
     location.reload();
 });
+
+function signOut()
+{
+    sessionStorage.removeItem('passwordEntered');
+    location.reload();
+}
